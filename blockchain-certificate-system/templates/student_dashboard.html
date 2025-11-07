@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .info-row {
+            display: flex;
+            margin: 10px 0;
+        }
+        .info-label {
+            font-weight: 600;
+            width: 150px;
+            color: #555;
+        }
+        .certificates-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .certificates-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .cert-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .cert-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .cert-details {
+            color: #666;
+            margin: 5px 0;
+        }
+        .view-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        .view-btn:hover {
+            background: #764ba2;
+        }
+        .download-btn {
+            background: #28a745;
+        }
+        .download-btn:hover {
+            background: #218838;
+        }
+        .no-certs {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        .logout-btn {
+            float: right;
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .flash {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .flash.success { background: #d4edda; color: #155724; }
+        .flash.warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            <h1>👨‍🎓 Student Dashboard</h1>
+            <p>Welcome, {{ student.Name }}!</p>
+            
+            <div class="user-info">
+                <div class="info-row">
+                    <span class="info-label">USN:</span>
+                    <span>{{ student.USN }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Department:</span>
+                    <span>{{ student.Department }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span>{{ student.Email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Phone:</span>
+                    <span>{{ student.Phone }}</span>
+                </div>
+            </div>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="certificates-section">
+            <h2>📜 My Certificates ({{ certificates|length }})</h2>
+            
+            {% if certificates %}
+                {% for cert in certificates %}
+                <div class="cert-card">
+                    <h3>{{ cert.Department }} - {{ cert.AcademicYear }}</h3>
+                    <div class="cert-details"><strong>CGPA:</strong> {{ cert.CGPA }}</div>
+                    <div class="cert-details"><strong>Period:</strong> {{ cert.JoiningDate }} to {{ cert.EndDate }}</div>
+                    <div class="cert-details"><strong>Hash:</strong> {{ cert.hash[:20] }}...</div>
+                    <a href="{{ url_for('student_view_certificate', cert_hash=cert.hash) }}" class="view-btn">View Details</a>
+                    <a href="{{ url_for('download_certificate', cert_hash=cert.hash) }}" class="view-btn download-btn">Download PDF</a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-certs">
+                    <h3>No certificates found</h3>
+                    <p>Your certificates will appear here once issued by your college</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

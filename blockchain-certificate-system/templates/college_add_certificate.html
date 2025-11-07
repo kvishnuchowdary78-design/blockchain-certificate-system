@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue Certificate</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 20px auto; }
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        h1 { color: #667eea; margin-bottom: 30px; text-align: center; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group { margin-bottom: 25px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea { resize: vertical; min-height: 100px; }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .flash {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .flash.success { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb;
+        }
+        .flash.danger { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb;
+        }
+        .flash.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        .file-upload input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+        .file-upload-label {
+            display: block;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .file-upload-label:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+        .file-name {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 600;
+        }
+        .required { color: red; }
+        .helper-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>📜 Issue Certificate</h1>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" enctype="multipart/form-data" id="certForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="usnSelect">Select Student <span class="required">*</span></label>
+                        <select name="usn" id="usnSelect" required onchange="updateStudentInfo()">
+                            <option value="">-- Select Student --</option>
+                            {% for student in students %}
+                            <option value="{{ student.USN }}" 
+                                    data-name="{{ student.Name }}" 
+                                    data-dept="{{ student.Department }}">
+                                {{ student.USN }} - {{ student.Name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentName">Student Name <span class="required">*</span></label>
+                        <input type="text" name="student_name" id="studentName" required readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="department">Department <span class="required">*</span></label>
+                        <input type="text" name="department" id="department" required readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="academicYear">Academic Year <span class="required">*</span></label>
+                        <input type="text" name="academic_year" id="academicYear" 
+                               placeholder="e.g., 2021-2025" required>
+                        <div class="helper-text">Format: YYYY-YYYY</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="joiningDate">Joining Date <span class="required">*</span></label>
+                        <input type="date" name="joining_date" id="joiningDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endDate">End Date <span class="required">*</span></label>
+                        <input type="date" name="end_date" id="endDate" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cgpa">CGPA <span class="required">*</span></label>
+                        <input type="number" name="cgpa" id="cgpa" 
+                               step="0.01" min="0" max="10" 
+                               placeholder="e.g., 8.5" required>
+                        <div class="helper-text">Value between 0 and 10</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="personality">Personality/Remarks <span class="required">*</span></label>
+                        <input type="text" name="personality" id="personality" 
+                               placeholder="e.g., Excellent" required>
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="skills">Skills (Optional)</label>
+                    <textarea name="skills" id="skills" 
+                              placeholder="e.g., Java, Python, Web Development, Leadership"></textarea>
+                    <div class="helper-text">Separate multiple skills with commas</div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>Certificate PDF File <span class="required">*</span></label>
+                    <div class="file-upload">
+                        <input type="file" name="certfile" id="certfile" 
+                               accept=".pdf" required onchange="displayFileName()">
+                        <label for="certfile" class="file-upload-label">
+                            📄 Click to select PDF file
+                            <div class="helper-text">Maximum file size: 10MB</div>
+                        </label>
+                    </div>
+                    <div id="fileName" class="file-name"></div>
+                </div>
+                
+                <button type="submit" id="submitBtn">Issue Certificate</button>
+            </form>
+            
+            <div class="back-link">
+                <a href="{{ url_for('college_dashboard') }}">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateStudentInfo() {
+            const select = document.getElementById('usnSelect');
+            const selected = select.options[select.selectedIndex];
+            
+            document.getElementById('studentName').value = selected.getAttribute('data-name') || '';
+            document.getElementById('department').value = selected.getAttribute('data-dept') || '';
+        }
+        
+        function displayFileName() {
+            const fileInput = document.getElementById('certfile');
+            const fileNameDiv = document.getElementById('fileName');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    fileNameDiv.innerHTML = `<span style="color: red;">❌ File too large: ${fileSizeMB} MB (Max: 10 MB)</span>`;
+                    fileInput.value = '';
+                } else {
+                    fileNameDiv.innerHTML = `✓ Selected: ${file.name} (${fileSizeMB} MB)`;
+                }
+            } else {
+                fileNameDiv.innerHTML = '';
+            }
+        }
+        
+        // Form validation
+        document.getElementById('certForm').addEventListener('submit', function(e) {
+            const cgpa = parseFloat(document.getElementById('cgpa').value);
+            
+            if (cgpa < 0 || cgpa > 10) {
+                e.preventDefault();
+                alert('CGPA must be between 0 and 10');
+                return false;
+            }
+            
+            const fileInput = document.getElementById('certfile');
+            if (fileInput.files.length === 0) {
+                e.preventDefault();
+                alert('Please select a PDF file');
+                return false;
+            }
+            
+            // Disable submit button to prevent double submission
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+        });
+        
+        // Date validation
+        document.getElementById('endDate').addEventListener('change', function() {
+            const startDate = new Date(document.getElementById('joiningDate').value);
+            const endDate = new Date(this.value);
+            
+            if (endDate < startDate) {
+                alert('End date must be after joining date');
+                this.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

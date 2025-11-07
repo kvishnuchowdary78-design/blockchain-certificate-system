@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Certificate</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 20px auto; }
+        .cert-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        h1 { color: #667eea; margin-bottom: 30px; text-align: center; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .info-row {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #333;
+            font-size: 1.1em;
+        }
+        .qr-section {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        .qr-section h3 { color: #667eea; margin-bottom: 15px; }
+        .hash-display {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-family: monospace;
+            margin-top: 15px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+        .btn:hover { opacity: 0.8; }
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+        .btn-secondary {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cert-container">
+            <h1>📜 Certificate Details</h1>
+            
+            <div class="info-grid">
+                <div class="info-row">
+                    <span class="info-label">Student Name</span>
+                    <span class="info-value">{{ cert.Studentname }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">USN</span>
+                    <span class="info-value">{{ cert.USN }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Department</span>
+                    <span class="info-value">{{ cert.Department }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">College ID</span>
+                    <span class="info-value">{{ cert.CollegeID }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Academic Year</span>
+                    <span class="info-value">{{ cert.AcademicYear }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">CGPA</span>
+                    <span class="info-value">{{ cert.CGPA }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Joining Date</span>
+                    <span class="info-value">{{ cert.JoiningDate }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">End Date</span>
+                    <span class="info-value">{{ cert.EndDate }}</span>
+                </div>
+                {% if cert.Skills %}
+                <div class="info-row" style="grid-column: 1 / -1;">
+                    <span class="info-label">Skills</span>
+                    <span class="info-value">{{ cert.Skills }}</span>
+                </div>
+                {% endif %}
+                {% if cert.Personality %}
+                <div class="info-row" style="grid-column: 1 / -1;">
+                    <span class="info-label">Remarks</span>
+                    <span class="info-value">{{ cert.Personality }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="qr-section">
+                <h3>🔐 Certificate Hash</h3>
+                <p>This hash can be used to verify the certificate</p>
+                <div class="hash-display">{{ cert.hash }}</div>
+            </div>
+            
+            <div class="btn-group">
+                <a href="{{ url_for('download_certificate', cert_hash=cert.hash) }}" class="btn btn-primary">
+                    Download PDF
+                </a>
+                <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
