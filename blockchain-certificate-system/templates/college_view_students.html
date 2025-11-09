@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Students</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .header h1 { color: #667eea; }
+        table {
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        th, td { padding: 15px; text-align: left; }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        tr:hover { background: #f8f9fa; }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Students ({{ students|length }})</h1>
+            <p>Students from colleges that granted you access</p>
+        </div>
+        
+        {% if students %}
+        <table>
+            <thead>
+                <tr>
+                    <th>USN</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>College ID</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.USN }}</td>
+                    <td>{{ student.Name }}</td>
+                    <td>{{ student.Department }}</td>
+                    <td>{{ student.CollegeID }}</td>
+                    <td>{{ student.Email }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="background: white; padding: 60px; border-radius: 15px; text-align: center;">
+            <h2 style="color: #999;">No students accessible</h2>
+            <p style="color: #666; margin-top: 10px;">Request colleges to grant you access</p>
+        </div>
+        {% endif %}
+        
+        <a href="{{ url_for('company_dashboard') }}" class="back-link">← Back to Dashboard</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Company Access</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .header h1 { color: #667eea; margin-bottom: 10px; }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .section h2 { color: #667eea; margin-bottom: 20px; }
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .company-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .company-card h3 { color: #333; margin-bottom: 10px; }
+        .company-card p { color: #666; margin: 5px 0; }
+        .grant-btn, .revoke-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .grant-btn {
+            background: #28a745;
+            color: white;
+        }
+        .revoke-btn {
+            background: #dc3545;
+            color: white;
+        }
+        .back-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .flash {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .flash.success { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Manage Company Access</h1>
+            <p>Grant or revoke company access to view student data</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="section">
+            <h2>✅ Companies with Access</h2>
+            {% if companies_with_access %}
+            <div class="company-grid">
+                {% for company in companies_with_access %}
+                <div class="company-card">
+                    <h3>{{ company.Name }}</h3>
+                    <p><strong>ID:</strong> {{ company.CompanyID }}</p>
+                    <p><strong>Industry:</strong> {{ company.Industry }}</p>
+                    <p><strong>Email:</strong> {{ company.Email }}</p>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="company_id" value="{{ company.CompanyID }}">
+                        <input type="hidden" name="action" value="revoke">
+                        <button type="submit" class="revoke-btn" 
+                                onclick="return confirm('Revoke access for {{ company.Name }}?')">
+                            Revoke Access
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No companies have access yet.</p>
+            {% endif %}
+        </div>
+        
+        <div class="section">
+            <h2>🏢 All Companies</h2>
+            <div class="company-grid">
+                {% for company in all_companies %}
+                <div class="company-card">
+                    <h3>{{ company.Name }}</h3>
+                    <p><strong>ID:</strong> {{ company.CompanyID }}</p>
+                    <p><strong>Industry:</strong> {{ company.Industry }}</p>
+                    <p><strong>Email:</strong> {{ company.Email }}</p>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="company_id" value="{{ company.CompanyID }}">
+                        <input type="hidden" name="action" value="grant">
+                        <button type="submit" class="grant-btn">
+                            Grant Access
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <a href="{{ url_for('college_dashboard') }}" class="back-link">← Back to Dashboard</a>
+    </div>
+</body>
+</html>

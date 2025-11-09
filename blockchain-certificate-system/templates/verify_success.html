@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Verified</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        h1 { 
+            color: #28a745; 
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .verified-badge {
+            display: inline-block;
+            padding: 10px 25px;
+            background: #28a745;
+            color: white;
+            border-radius: 25px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+        .info-section {
+            text-align: left;
+            margin: 30px 0;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .info-row {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .info-row.full-width {
+            grid-column: 1 / -1;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #333;
+            font-size: 1.1em;
+        }
+        .hash-display {
+            background: #fff;
+            padding: 15px;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            word-break: break-all;
+            font-family: monospace;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .download-btn, .back-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+        .download-btn {
+            background: #28a745;
+            color: white;
+        }
+        .download-btn:hover { 
+            opacity: 0.9;
+        }
+        .back-btn {
+            background: #667eea;
+            color: white;
+        }
+        .back-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✅</div>
+        <h1>Certificate Verified Successfully!</h1>
+        <div class="verified-badge">🔐 Blockchain Verified</div>
+        
+        <div class="info-section">
+            <h2 style="color: #667eea; margin-bottom: 20px;">Certificate Details</h2>
+            
+            <div class="info-grid">
+                <div class="info-row">
+                    <span class="info-label">Student Name</span>
+                    <span class="info-value">{{ cert.Studentname }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">USN</span>
+                    <span class="info-value">{{ cert.USN }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Department</span>
+                    <span class="info-value">{{ cert.Department }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">College ID</span>
+                    <span class="info-value">{{ cert.CollegeID }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Academic Year</span>
+                    <span class="info-value">{{ cert.AcademicYear }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">CGPA</span>
+                    <span class="info-value">{{ cert.CGPA }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Joining Date</span>
+                    <span class="info-value">{{ cert.JoiningDate }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">End Date</span>
+                    <span class="info-value">{{ cert.EndDate }}</span>
+                </div>
+                
+                {% if cert.Skills %}
+                <div class="info-row full-width">
+                    <span class="info-label">Skills</span>
+                    <span class="info-value">{{ cert.Skills }}</span>
+                </div>
+                {% endif %}
+                
+                {% if cert.Personality %}
+                <div class="info-row full-width">
+                    <span class="info-label">Remarks</span>
+                    <span class="info-value">{{ cert.Personality }}</span>
+                </div>
+                {% endif %}
+                
+                <div class="info-row full-width">
+                    <span class="info-label">Certificate Hash</span>
+                    <div class="hash-display">{{ cert.hash }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            {% if cert.CertificateFile %}
+            <a href="{{ url_for('download_certificate', cert_hash=cert.hash) }}" class="download-btn">
+                📄 Download PDF
+            </a>
+            {% endif %}
+            <a href="{{ url_for('index') }}" class="back-btn">
+                ← Back to Home
+            </a>
+        </div>
+    </div>
+</body>
+</html>

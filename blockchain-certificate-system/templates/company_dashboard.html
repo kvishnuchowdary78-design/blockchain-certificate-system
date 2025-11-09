@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .header h1 { color: #667eea; margin-bottom: 10px; }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .menu-item {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            text-align: center;
+        }
+        .menu-item:hover { transform: translateY(-5px); }
+        .menu-item h3 { color: #667eea; margin-bottom: 10px; }
+        .colleges-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .colleges-section h2 { color: #667eea; margin-bottom: 20px; }
+        .college-tag {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            margin: 5px;
+        }
+        .logout-btn {
+            float: right;
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            <h1>🏢 Company Dashboard</h1>
+            <p>Welcome, {{ company.Name }}!</p>
+        </div>
+        
+        <div class="colleges-section">
+            <h2>🔓 Accessible Colleges ({{ accessible_colleges|length }})</h2>
+            {% if accessible_colleges %}
+                {% for college_id in accessible_colleges %}
+                    <span class="college-tag">{{ college_id }}</span>
+                {% endfor %}
+            {% else %}
+                <p>No colleges have granted you access yet. Contact colleges to request access.</p>
+            {% endif %}
+        </div>
+        
+        <div class="menu-grid">
+            <a href="{{ url_for('company_verify_student') }}" class="menu-item">
+                <h3>🔍 Verify Student</h3>
+                <p>Verify student credentials</p>
+            </a>
+            <a href="{{ url_for('company_view_students') }}" class="menu-item">
+                <h3>👥 View Students</h3>
+                <p>Browse accessible students</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

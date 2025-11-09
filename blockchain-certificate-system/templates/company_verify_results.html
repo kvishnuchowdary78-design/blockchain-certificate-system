@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Results</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .header h1 { color: #667eea; margin-bottom: 10px; }
+        .cert-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .cert-card h2 { color: #667eea; margin-bottom: 20px; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .info-row {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #333;
+            font-size: 1.1em;
+        }
+        .verified-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        .download-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .no-results {
+            background: white;
+            padding: 60px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .no-results h2 { color: #dc3545; margin-bottom: 15px; }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Verification Results</h1>
+            <p>Certificate Verification Status</p>
+        </div>
+        
+        {% if results %}
+            {% for cert in results %}
+            <div class="cert-card">
+                <div class="verified-badge">✓ Verified</div>
+                <h2>{{ cert.Studentname }}</h2>
+                
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span class="info-label">USN</span>
+                        <span class="info-value">{{ cert.USN }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Department</span>
+                        <span class="info-value">{{ cert.Department }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">College ID</span>
+                        <span class="info-value">{{ cert.CollegeID }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Academic Year</span>
+                        <span class="info-value">{{ cert.AcademicYear }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">CGPA</span>
+                        <span class="info-value">{{ cert.CGPA }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Duration</span>
+                        <span class="info-value">{{ cert.JoiningDate }} to {{ cert.EndDate }}</span>
+                    </div>
+                    {% if cert.Skills %}
+                    <div class="info-row" style="grid-column: 1 / -1;">
+                        <span class="info-label">Skills</span>
+                        <span class="info-value">{{ cert.Skills }}</span>
+                    </div>
+                    {% endif %}
+                    {% if cert.Personality %}
+                    <div class="info-row" style="grid-column: 1 / -1;">
+                        <span class="info-label">Remarks</span>
+                        <span class="info-value">{{ cert.Personality }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <a href="{{ url_for('download_certificate', cert_hash=cert.hash) }}" class="download-btn">
+                    Download Certificate PDF
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                <h2>❌ No Results Found</h2>
+                <p>Either the certificate doesn't exist or you don't have access to this college's data.</p>
+                <p style="margin-top: 10px; color: #666;">Contact the college to request access.</p>
+            </div>
+        {% endif %}
+        
+        <a href="{{ url_for('company_verify_student') }}" class="back-link">← New Search</a>
+        <a href="{{ url_for('company_dashboard') }}" class="back-link">← Dashboard</a>
+    </div>
+</body>
+</html>

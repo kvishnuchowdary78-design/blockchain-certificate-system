@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Students</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .back-to-dashboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+        .back-to-dashboard:hover {
+            opacity: 0.9;
+        }
+        .header h1 { 
+            color: #667eea; 
+            margin-bottom: 10px;
+        }
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .stat-badge {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        .search-filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .search-box {
+            margin-bottom: 15px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-row select {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        .filter-row select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .clear-filters-btn {
+            padding: 12px 25px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .clear-filters-btn:hover {
+            opacity: 0.9;
+        }
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td { 
+            padding: 15px; 
+            text-align: left; 
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        th:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+        }
+        th::after {
+            content: ' ↕';
+            font-size: 0.8em;
+            opacity: 0.5;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        tr:hover { 
+            background: #e9ecef; 
+        }
+        .no-students {
+            background: white;
+            padding: 60px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .no-students .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .no-students p {
+            color: #999;
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .dept-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="{{ url_for('college_dashboard') }}" class="back-to-dashboard">
+                ← Back to Dashboard
+            </a>
+            <h1>👥 View All Students</h1>
+            
+            <div class="stats-bar">
+                <div class="stat-badge">
+                    Total Students: <strong id="totalCount">{{ students|length }}</strong>
+                </div>
+                <div class="stat-badge">
+                    Displayed: <strong id="displayCount">{{ students|length }}</strong>
+                </div>
+                <div class="stat-badge">
+                    Departments: <strong>{{ students | map(attribute='Department') | unique | list | length }}</strong>
+                </div>
+            </div>
+        </div>
+        
+        {% if students %}
+        <div class="search-filter-section">
+            <div class="search-box">
+                <input type="text" 
+                       id="searchInput" 
+                       placeholder="🔍 Search by name, USN, email, or phone..." 
+                       onkeyup="filterTable()">
+            </div>
+            
+            <div class="filter-row">
+                <select id="deptFilter" onchange="filterTable()">
+                    <option value="">All Departments</option>
+                    {% set departments = students | map(attribute='Department') | unique | list | sort %}
+                    {% for dept in departments %}
+                    <option value="{{ dept }}">{{ dept }}</option>
+                    {% endfor %}
+                </select>
+                
+                <select id="statusFilter" onchange="filterTable()">
+                    <option value="">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                
+                <button class="clear-filters-btn" onclick="clearFilters()">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="studentsTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">USN</th>
+                        <th onclick="sortTable(1)">Name</th>
+                        <th onclick="sortTable(2)">Department</th>
+                        <th onclick="sortTable(3)">Email</th>
+                        <th onclick="sortTable(4)">Phone</th>
+                        <th onclick="sortTable(5)">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td><strong>{{ student.USN }}</strong></td>
+                        <td>{{ student.Name }}</td>
+                        <td><span class="dept-badge">{{ student.Department }}</span></td>
+                        <td>{{ student.Email }}</td>
+                        <td>{{ student.Phone }}</td>
+                        <td>
+                            <span class="status-badge status-{{ student.Status|lower }}">
+                                {{ student.Status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-students">
+            <div class="icon">🎓</div>
+            <h2>No Students Found</h2>
+            <p>No students have been added yet.</p>
+            <p>Click "Add Student" from the dashboard to add your first student.</p>
+        </div>
+        {% endif %}
+        
+        <div class="action-buttons">
+            <a href="{{ url_for('college_add_student') }}" class="btn btn-success">
+                ➕ Add New Student
+            </a>
+            <a href="{{ url_for('college_dashboard') }}" class="btn btn-primary">
+                🏠 Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        let sortDirection = {};
+        
+        function filterTable() {
+            const searchInput = document.getElementById('searchInput').value.toUpperCase();
+            const deptFilter = document.getElementById('deptFilter').value.toUpperCase();
+            const statusFilter = document.getElementById('statusFilter').value.toUpperCase();
+            const table = document.getElementById('studentsTable');
+            const tr = table.getElementsByTagName('tr');
+            let visibleCount = 0;
+            
+            for (let i = 1; i < tr.length; i++) {
+                const row = tr[i];
+                const cells = row.getElementsByTagName('td');
+                let showRow = true;
+                
+                // Search filter (search in all visible text)
+                if (searchInput) {
+                    let found = false;
+                    for (let j = 0; j < cells.length; j++) {
+                        const cell = cells[j];
+                        if (cell) {
+                            const textValue = cell.textContent || cell.innerText;
+                            if (textValue.toUpperCase().indexOf(searchInput) > -1) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!found) showRow = false;
+                }
+                
+                // Department filter
+                if (deptFilter && cells[2]) {
+                    const deptText = cells[2].textContent || cells[2].innerText;
+                    if (deptText.toUpperCase().indexOf(deptFilter) === -1) {
+                        showRow = false;
+                    }
+                }
+                
+                // Status filter
+                if (statusFilter && cells[5]) {
+                    const statusText = cells[5].textContent || cells[5].innerText;
+                    if (statusText.toUpperCase().indexOf(statusFilter) === -1) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+                if (showRow) visibleCount++;
+            }
+            
+            document.getElementById('displayCount').textContent = visibleCount;
+        }
+        
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('deptFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            filterTable();
+        }
+        
+        function sortTable(columnIndex) {
+            const table = document.getElementById('studentsTable');
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            
+            // Toggle sort direction
+            sortDirection[columnIndex] = !sortDirection[columnIndex];
+            const ascending = sortDirection[columnIndex];
+            
+            rows.sort((a, b) => {
+                const aText = a.cells[columnIndex].textContent.trim();
+                const bText = b.cells[columnIndex].textContent.trim();
+                
+                if (ascending) {
+                    return aText.localeCompare(bText);
+                } else {
+                    return bText.localeCompare(aText);
+                }
+            });
+            
+            // Re-append sorted rows
+            const tbody = table.querySelector('tbody');
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    </script>
+</body>
+</html>
